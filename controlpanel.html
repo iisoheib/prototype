@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f8f8f8; }
+
+    /* ---------- Header ---------- */
+    header {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    header h1 { font-size: 20px; color: #333; }
+
+    .menu-btn {
+      font-size: 25px;
+      background: #ffd700;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* ---------- Sidebar ---------- */
+    .sidebar {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      top: 0;
+      right: 0;
+      background: #fff;
+      overflow-x: hidden;
+      transition: 0.3s;
+      padding-top: 60px; /* below header */
+      box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+      z-index: 999;
+    }
+    .sidebar button {
+      display: block;
+      padding: 15px 25px;
+      margin: 5px 0;
+      border: none;
+      background: #f0f0f0;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: right;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+    .sidebar button:hover, .sidebar button.active { background: #ffd700; color: #000; }
+
+    /* ---------- Overlay ---------- */
+    .overlay {
+      position: fixed;
+      display: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      right: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 900;
+      transition: 0.3s;
+    }
+
+    /* ---------- Main Content ---------- */
+    .main-content {
+      padding: 80px 20px 20px 20px; /* leave space for header */
+      transition: margin-right 0.3s;
+    }
+
+    .section {
+      display: none;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .section.active { display: block; animation: fadeIn 0.3s; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .visit-btn {
+      background: #ffd700;
+      color: #000;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 15px;
+    }
+    .visit-btn:hover { background: #e6c200; }
+
+    .instructions { line-height: 1.6; margin-top: 15px; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 768px) {
+      .sidebar { padding-top: 60px; } /* same as header height */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ---------- Header ---------- -->
+  <header>
+    <h1>لوحة التحكم</h1>
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+  </header>
+
+  <!-- ---------- Sidebar ---------- -->
+  <div id="mySidebar" class="sidebar">
+    <button class="nav-btn active" data-target="home">الرئيسية</button>
+    <button class="nav-btn" data-target="images">الصور</button>
+    <button class="nav-btn" data-target="settings">الإعدادات</button>
+    <button class="nav-btn" data-target="variants">أنواع المنتجات</button>
+    <button class="nav-btn" data-target="delivery">أسعار التوصيل</button>
+    <button class="nav-btn" data-target="orders">الطلبات</button>
+  </div>
+
+  <!-- ---------- Overlay ---------- -->
+  <div id="overlay" class="overlay"></div>
+
+  <!-- ---------- Main Content ---------- -->
+  <div class="main-content">
+    <!-- Home Section -->
+    <div id="home" class="section active">
+      <h2>مرحباً بك في لوحة التحكم</h2>
+      <p>استخدم هذه اللوحة للتحكم بكل جوانب صفحة الهبوط الخاصة بك:</p>
+      <div class="instructions">
+        <ul>
+          <li>قم بزيارة الموقع لمشاهدة التغييرات مباشرة.</li>
+          <li>قم برفع أو تعديل صور المنتجات في قسم الصور.</li>
+          <li>قم بتحرير أنواع المنتجات والأسعار في قسم أنواع المنتجات.</li>
+          <li>اضبط أسعار التوصيل في قسم أسعار التوصيل.</li>
+          <li>قم بتغيير الإعدادات مثل Pixel ID في قسم الإعدادات.</li>
+          <li>اطلع على الطلبات المُرسلة في قسم الطلبات.</li>
+        </ul>
+      </div>
+      <button class="visit-btn" id="visitBtn">
+        زيارة الموقع لرؤية التغييرات
+      </button>
+      
+      <script>
+        document.getElementById('visitBtn').addEventListener('click', () => {
+          window.open("https://iisoheib.github.io/prototype/landing%20age%20tester.html", "_blank", "noopener,noreferrer");
+        });
+      </script>
+    </div>
+
+    <!-- Images Section -->
+    <div id="images" class="section">
+      <h2>الصور</h2>
+      <p>قم برفع أو إدارة صور المنتجات هنا.</p>
+      <div class="uploader">
+        <h3>تحديث الصور</h3>
+        <div class="drop-area" id="drop-area">
+          اسحب وأفلت الصورة هنا أو انقر لاختيارها
+          <input type="file" id="fileElem" accept="image/*" style="display:none">
+        </div>
+        <img id="preview">
+        <div class="status" id="status"></div>
+        <div class="button-group">
+          <button id="saveImage1">حفظ الصورة 1</button>
+          <button id="saveImage2">حفظ الصورة 2</button>
+          <button id="saveImage3">حفظ الصورة 3</button>
+        </div>
+      </div>
+    
+      <style>
+        /* Match premium dashboard theme */
+        .uploader {
+          max-width: 600px;
+          margin: 20px auto;
+          background: #fff;
+          padding: 25px 30px;
+          border-radius: 15px;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+          text-align: center;
+          transition: 0.3s;
+        }
+        .uploader h3 {
+          margin-bottom: 15px;
+          color: #333;
+          font-size: 20px;
+        }
+        .drop-area {
+          border: 2px dashed #ffd700;
+          border-radius: 12px;
+          padding: 50px 20px;
+          cursor: pointer;
+          margin-bottom: 20px;
+          transition: 0.3s;
+          color: #555;
+          font-weight: 500;
+          background: #fffbe6;
+        }
+        .drop-area.hover {
+          border-color: #ffbf00;
+          background: #fff7d6;
+        }
+        img#preview {
+          max-width: 100%;
+          margin-top: 15px;
+          display: none;
+          border-radius: 12px;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+          transition: 0.3s;
+        }
+        .status {
+          margin-top: 12px;
+          font-weight: bold;
+          min-height: 24px;
+          color: #333;
+        }
+        .button-group {
+          margin-top: 15px;
+        }
+        .button-group button {
+          padding: 10px 20px;
+          margin: 5px;
+          background: #ffd700;
+          color: #000;
+          border: none;
+          border-radius: 10px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: 0.2s;
+        }
+        .button-group button:hover {
+          background: #e6c200;
+        }
+    
+        /* Loading dots animation */
+        .loading span {
+          display: inline-block;
+          width: 6px;
+          height: 6px;
+          margin: 0 2px;
+          background-color: #ffd700;
+          border-radius: 50%;
+          animation: bounce 0.6s infinite alternate;
+        }
+        .loading span:nth-child(2) { animation-delay: 0.2s; }
+        .loading span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+      </style>
+      <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileElem = document.getElementById('fileElem');
+        const preview = document.getElementById('preview');
+        const status = document.getElementById('status');
+        let uploadedUrl = ""; // store the uploaded image URL
+        
+        // Click to open file dialog
+        dropArea.addEventListener('click', () => fileElem.click());
+        fileElem.addEventListener('change', e => handleFiles(e.target.files));
+        
+        // Drag & drop
+        dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('hover'); });
+        dropArea.addEventListener('dragleave', e => dropArea.classList.remove('hover'));
+        dropArea.addEventListener('drop', e => {
+          e.preventDefault();
+          dropArea.classList.remove('hover');
+          handleFiles(e.dataTransfer.files);
+        });
+        
+        // Handle file selection
+        function handleFiles(files){
+          if(files.length === 0) return;
+          const file = files[0];
+          uploadToImgBB(file);
+        }
+        
+        // Show loading animation
+        function showLoading(msg){
+          status.innerHTML = `${msg} <span class="loading"><span></span><span></span><span></span></span>`;
+        }
+        
+        // Upload to ImgBB
+        async function uploadToImgBB(file){
+          showLoading("Uploading");
+          const formData = new FormData();
+          formData.append("key", "a766dab2bd05064e7a83c505fef92945"); // replace with your API key
+          formData.append("image", file);
+        
+          try {
+            const res = await fetch("https://api.imgbb.com/1/upload", { method: "POST", body: formData });
+            const data = await res.json();
+            if(!data.success) throw new Error(data.error?.message || "Upload failed");
+        
+            uploadedUrl = data.data.url;
+            preview.src = uploadedUrl;
+            preview.style.display = "block";
+            status.textContent = "Upload successful!";
+          } catch(err){
+            console.error(err);
+            status.textContent = "Error: " + err.message;
+          }
+        }
+        
+        // Save URL to Google Sheet
+        async function saveToSheet(key){
+          if(!uploadedUrl) { status.textContent = "Please upload an image first."; return; }
+          showLoading(`Saving ${key}`);
+          try {
+            const res = await fetch("https://script.google.com/macros/s/AKfycbyN1_LSlsKJoOm6ouIwVt6ma2fBzp_Bz6-WIXgJx6rFPjFtMi6dgy7R4ZddX65fui9b9A/exec", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({ key: key, value: uploadedUrl })
+            });
+            const data = await res.json();
+            if(data.success){
+              status.textContent = `${key} saved successfully!`;
+            } else {
+              throw new Error(data.error || "Failed to save");
+            }
+          } catch(err){
+            console.error(err);
+            status.textContent = "Error: " + err.message;
+          }
+        }
+        
+        // Add listeners to buttons
+        document.getElementById('saveImage1').addEventListener('click', () => saveToSheet("image1"));
+        document.getElementById('saveImage2').addEventListener('click', () => saveToSheet("image2"));
+        document.getElementById('saveImage3').addEventListener('click', () => saveToSheet("image3"));
+        </script>
+    </div>
+
+    <!-- Settings Section -->
+    <div id="settings" class="section">
+      <h2>الإعدادات</h2>
+      <p>قم بتحرير إعدادات الموقع مثل Pixel ID والخيارات العامة.</p>
+
+      
+  <div class="table-container">
+    <table id="settingsTable" style="width:100%; direction:ltr; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be populated dynamically -->
+      </tbody>
+    </table>
+
+    <button id="saveAllBtn" class="save-btn">حفظ التغييرات</button>
+    <div id="status" class="status-msg"></div>
+    <div id="status" style="margin-bottom:10px; font-weight:bold; min-height:24px;"></div>
+<div id="progressContainer" style="width:100%; background:#eee; border-radius:6px; overflow:hidden; height:12px; margin-bottom:20px;">
+  <div id="progressBar" style="width:0%; height:100%; background:#ffd700;"></div>
+</div>
+  </div>
+
+  <style>
+    .table-container {
+      margin-top: 20px;
+      max-width: 800px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    th, td {
+      text-align: right;
+      padding: 12px 10px;
+      border-bottom: 1px solid #ddd;
+      font-size: 16px;
+    }
+    th {
+      background: #f9f9f9;
+      font-weight: 600;
+    }
+    td input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+    td input:focus {
+      outline: none;
+      border-color: #ffd700;
+      box-shadow: 0 0 5px rgba(255,215,0,0.4);
+    }
+    .save-btn {
+      padding: 12px 25px;
+      background: #ffd700;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .save-btn:hover {
+      background: #e6c200;
+    }
+    .status-msg {
+      margin-top: 10px;
+      font-weight: bold;
+      min-height: 22px;
+      color: #333;
+    }
+    .loading span { display:inline-block; width:6px; height:6px; margin:0 2px; background-color:#ffd700; border-radius:50%; animation:bounce 0.6s infinite alternate; }
+.loading span:nth-child(2) { animation-delay:0.2s; }
+.loading span:nth-child(3) { animation-delay:0.4s; }
+@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+  </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const tableBody = document.querySelector("#settingsTable tbody");
+      const saveBtn = document.getElementById("saveAllBtn");
+      const status = document.getElementById("status");
+      const scriptUrl = "https://script.google.com/macros/s/AKfycbyN1_LSlsKJoOm6ouIwVt6ma2fBzp_Bz6-WIXgJx6rFPjFtMi6dgy7R4ZddX65fui9b9A/exec";
+    
+      // 1️⃣ Fetch settings
+      async function loadSettings() {
+        try {
+          const res = await fetch(scriptUrl);
+          const data = await res.json();
+    
+          Object.keys(data).forEach(key => {
+            if(key.startsWith("image")) return; // skip images
+    
+            const tr = document.createElement("tr");
+    
+            const tdKey = document.createElement("td");
+            tdKey.textContent = key;
+    
+            const tdValue = document.createElement("td");
+            const input = document.createElement("input");
+            input.value = data[key] || "";
+            input.dataset.key = key;
+            tdValue.appendChild(input);
+    
+            tr.appendChild(tdKey);
+            tr.appendChild(tdValue);
+            tableBody.appendChild(tr);
+          });
+        } catch(err) {
+          tableBody.innerHTML = "<tr><td colspan='2'>خطأ في تحميل الإعدادات: " + err.message + "</td></tr>";
+        }
+      }
+    
+      saveBtn.addEventListener("click", async () => {
+  const inputs = Array.from(tableBody.querySelectorAll("input")).filter(input => !input.dataset.key.startsWith("image"));
+  const total = inputs.length;
+  const progressBar = document.getElementById("progressBar");
+
+  // Start
+  saveBtn.textContent = "جارٍ الحفظ…"; // Button shows uploading
+  progressBar.style.width = "0%";
+  status.textContent = "";
+
+  let failed = false;
+
+  for (let i = 0; i < total; i++) {
+    const input = inputs[i];
+    const key = input.dataset.key;
+    const value = input.value;
+
+    // Update progress bar
+    progressBar.style.width = `${Math.round(((i + 1) / total) * 100)}%`;
+
+    try {
+      const formData = new URLSearchParams();
+      formData.append("key", key);
+      formData.append("value", value);
+
+      const res = await fetch(scriptUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData
+      });
+
+      const result = await res.json();
+      if (!result.success) throw new Error("فشل الحفظ");
+    } catch (err) {
+      console.error(err);
+      failed = true;
+      status.textContent = `حدث خطأ أثناء الحفظ: ${key}`;
+      break; // stop on first error
+    }
+
+    // small delay for UX
+    await new Promise(r => setTimeout(r, 150));
+  }
+
+  // Done
+  saveBtn.textContent = "حفظ التغييرات"; // Reset button
+  if (!failed) {
+    status.textContent = "✅ تم حفظ جميع التغييرات بنجاح!";
+    progressBar.style.width = "100%";
+  }
+});
+
+
+
+    
+      loadSettings();
+    });
+    </script>
+    
+    </div>
+
+    <!-- Variants Section -->
+    <div id="variants" class="section">
+      <h2>أنواع المنتجات</h2>
+      <p>قم بتحرير أسماء المنتجات والأسعار والتوفر.</p>
+    </div>
+
+    <!-- Delivery Prices Section -->
+    <div id="delivery" class="section">
+      <h2>أسعار التوصيل</h2>
+      <p>قم بتحرير تكاليف التوصيل لكل منطقة أو نوع.</p>
+    </div>
+
+    <!-- Orders Section -->
+    <div id="orders" class="section">
+      <h2>الطلبات</h2>
+      <p>اطلع على الطلبات المُرسلة هنا.</p>
+    </div>
+  </div>
+
+  <!-- ---------- Script ---------- -->
+  <script>
+    const sidebar = document.getElementById('mySidebar');
+    const overlay = document.getElementById('overlay');
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.section');
+    let isSidebarOpen = false; // flag to track sidebar state
+
+    // Toggle sidebar
+    function toggleSidebar() {
+      if (isSidebarOpen) {
+        sidebar.style.width = "0";
+        overlay.style.display = "none";
+        isSidebarOpen = false;
+      } else {
+        sidebar.style.width = "250px";
+        overlay.style.display = "block";
+        isSidebarOpen = true;
+      }
+    }
+
+    // Close sidebar when clicking overlay
+    overlay.addEventListener('click', toggleSidebar);
+
+    // Navigation buttons
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Highlight active button
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Show corresponding section
+        const target = btn.getAttribute('data-target');
+        sections.forEach(sec => sec.classList.remove('active'));
+        document.getElementById(target).classList.add('active');
+
+        // Close sidebar after selecting a section
+        if (isSidebarOpen) toggleSidebar();
+      });
+    });
+  </script>
+
+</body>
+</html>
