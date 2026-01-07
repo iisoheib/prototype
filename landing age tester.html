@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Product Landing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        /* -------------------------
+   GLOBAL RESET & BASE STYLES
+---------------------------- */
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: "Cairo", "Segoe UI", sans-serif;
+    background: #0b0b0b;
+    color: #eaeaea;
+    direction: rtl;
+    scroll-behavior: smooth;
+  }
+  
+  section {
+    padding: 24px 16px;
+  }
+  
+  h1, h2, h3 {
+    margin: 0 0 12px;
+    line-height: 1.3;
+  }
+  
+  .gold {
+    color: #d4af37;
+  }
+  
+  /* -------------------------
+     HERO SECTION
+  ---------------------------- */
+  #hero {
+    background: radial-gradient(circle at top, #1a1a1a, #000);
+    text-align: center;
+    padding: 60px 20px;
+  }
+  
+  #hero h1 {
+    font-size: 2.4rem;
+    color: #d4af37;
+    text-shadow: 0 0 20px rgba(212,175,55,.4);
+  }
+  
+  #hero p {
+    color: #cfcfcf;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 10px auto 0;
+  }
+  
+  .hero-price {
+    margin-top: 20px;
+  }
+  
+  #priceBefore {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 1.2rem;
+  }
+  
+  #priceAfter {
+    font-size: 22px;
+    font-weight: bold;
+    color: #FFD700;
+    animation: pulse 1.2s infinite alternate;
+  }
+  
+  #ctaButton {
+    margin-top: 25px;
+    padding: 16px 38px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #d4af37, #b8962e);
+    color: #000;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(212,175,55,.45);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  
+  #ctaButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(212,175,55,.6);
+  }
+  
+  /* -------------------------
+     SLIDER
+  ---------------------------- */
+  .slider {
+    overflow: hidden;
+    border-radius: 18px;
+    background: #000;
+    direction: ltr;
+  }
+  
+  .slider-track {
+    display: flex;
+    transition: transform .5s ease;
+  }
+  
+  .slider-track img {
+    width: 100%;
+    flex-shrink: 0;
+    border-radius: 18px;
+  }
+  
+  .slider-dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .slider-dots span {
+    width: 8px;
+    height: 8px;
+    background: #555;
+    border-radius: 50%;
+    margin: 0 4px;
+    transition: all 0.3s ease;
+  }
+  
+  .slider-dots span.active {
+    background: #d4af37;
+  }
+  
+  /* -------------------------
+     DESCRIPTION
+  ---------------------------- */
+  .description-box {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 20px 0;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.4s ease;
+  }
+  
+  .description-box span.highlight {
+    color: #FFD700;
+    font-weight: bold;
+    animation: pulse 1.5s infinite;
+  }
+  
+  .description-box.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInDesc 0.8s forwards;
+  }
+  
+  @keyframes fadeInDesc {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* -------------------------
+     BENEFITS
+  ---------------------------- */
+  #benefits {
+    display: flex;
+    flex-direction: column; /* stack each benefit vertically */
+    gap: 6px;               /* small spacing between lines */
+  }
+  
+  .benefit-card {
+    background: #1a1a1a;   /* dark background */
+    padding: 8px 12px;      /* compact padding */
+    border-radius: 8px;     /* slight rounding */
+    font-size: 0.95rem;
+    border-left: 4px solid #FFD700; /* golden highlight */
+    display: flex;
+    align-items: center;    /* vertically center checkmark */
+    height: auto;           /* make height fit content */
+  }
+  
+  .benefit-card::before {
+    content: "✔";
+    color: #FFD700;
+    margin-left: 10px;
+  }
+  
+  
+  /* -------------------------
+     VARIANTS
+  ---------------------------- */
+  .variant-block {
+    margin-bottom: 16px;
+  }
+  
+  .variant-title {
+    margin-bottom: 8px;
+    color: #d4af37;
+  }
+  
+  .variant-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .variant-option {
+    cursor: pointer;
+    padding: 10px 18px;
+    background-color: #222;
+    color: #fff;
+    border-radius: 14px;
+    border: 2px solid #444;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    min-width: 60px;
+    text-align: center;
+    user-select: none;
+  }
+  
+  .variant-option input {
+    display: none;
+  }
+  
+  .variant-option.active {
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 10px #FFD700;
+    background-color: #333;
+    color: #FFD700;
+  }
+  
+  /* -------------------------
+     OFFER CARDS
+  ---------------------------- */
+  .offer-card {
+    background: #141414;
+    padding: 12px 16px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    border: 1px solid #222;
+    transition: all 0.3s ease;
+  }
+  
+  .offer-card.highlighted {
+    background: linear-gradient(135deg, #d4af37, #b8962e);
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 4px 14px rgba(212,175,55,.45);
+  }
+  
+  /* -------------------------
+     ORDER FORM
+  ---------------------------- */
+  #orderForm form {
+    background: #0f0f0f;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid #222;
+    transition: all 0.3s ease;
+  }
+  
+  #orderForm label {
+    display: block;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    color: #d4af37;
+    font-size: 0.95rem;
+  }
+  
+  #orderForm input,
+  #orderForm select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 1rem;
+  }
+  
+  .quantity-field {
+    display: flex;
+    align-items: center;
+  }
+  
+  .qty-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #d4af37;
+    color: #000;
+    font-size: 1.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .qty-btn:hover {
+    transform: scale(1.1);
+  }
+  
+  #quantity {
+    text-align: center;
+    margin: 0 10px;
+  }
+  
+ /* Delivery radio buttons like variants */
+.radio {
+    cursor: pointer;
+    padding: 10px 18px;
+    background-color: #222;
+    color: #fff;
+    border-radius: 14px;
+    border: 2px solid #444;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    text-align: center;
+    user-select: none;
+    display: inline-flex; /* like flex for centering */
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px; /* spacing between options */
+  }
+  
+  /* Hide the actual radio input */
+  .radio input[type="radio"] {
+    display: none;
+  }
+  
+  /* Active / selected state */
+  .radio.active {
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 10px #FFD700;
+    background-color: #333;
+    color: #FFD700;
+  }
+  
+
+  .buy-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 16px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #d4af37, #b8962e);
+    color: #000;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  
+  .buy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(212,175,55,.45);
+  }
+  
+  .buy-btn:disabled {
+    background: #555;        /* gray background */
+    color: #ccc;             /* lighter text */
+    cursor: not-allowed;     /* show forbidden cursor */
+    box-shadow: none;        /* remove glow/shadow */
+    opacity: 0.7;            /* subtle transparency */
+    transform: none;         /* remove hover transform effect */
+  }
+  
+  /* -------------------------
+     SUMMARY BOX
+  ---------------------------- */
+  #summary {
+    background: linear-gradient(135deg, #1f1f2f, #252536); /* subtle dark gradient */
+    border-radius: 18px;
+    padding: 20px;
+    font-size: 1.1rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid #444;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  #summary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(212, 175, 55, 0.4);
+  }
+  
+  #summary h3 {
+    margin-bottom: 12px;
+    color: #FFD700; /* golden header */
+    text-shadow: 0 0 8px rgba(212,175,55,0.5);
+  }
+  
+  #summary p {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: #ddd;
+  }
+  
+  #summary span {
+    font-weight: bold;
+    color: #d4af37;
+  }
+  
+  /* Highlight total more */
+  #summary .total {
+    font-size: 1.4rem;
+    color: #FFD700;
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+  }
+  
+  
+  /* -------------------------
+     ANIMATIONS
+  ---------------------------- */
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.9; }
+  }
+  
+    </style>
+
+  <style>
+    /* Loading screen overlay begin ==================================================================================== */
+    #loadingScreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-family: sans-serif;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loadingScreen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* Spinner */
+    .spinner {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #09ff00; /* primary color from settings */
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1.2rem;
+      color: #333;
+    }
+    /* Loading screen overlay end====================================================================================== */
+  </style>
+
+  <script>
+    // dont tush its pixel set up and pixel id injection=================================================================
+    function injectMetaPixel(pixelId) {
+      if (!pixelId) {
+        console.warn("Meta Pixel ID missing — pixel not injected");
+        return;
+      }
+
+      if (window.fbq) {
+        console.warn("Meta Pixel already initialized");
+        return;
+      }
+
+      !function(f,b,e,v,n,t,s)
+      {
+        if(f.fbq) return;
+        n=f.fbq=function(){
+          n.callMethod ?
+            n.callMethod.apply(n,arguments) :
+            n.queue.push(arguments)
+        };
+        if(!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = '2.0';
+        n.queue = [];
+        t = b.createElement(e); t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)
+      }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+      fbq('init', pixelId);
+      fbq('track', 'PageView');
+
+      console.log("✅ Meta Pixel injected dynamically:", pixelId);
+    }
+
+    // dont tush its pixel set up and pixel id injection=================================================================
+
+  </script>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loadingScreen">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading page...</div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="mainContent" style="display:none;">
+    <!-- Your landing page content goes here -->
+    <section id="hero">
+      <h1 id="productName">اسم المنتج</h1>
+      <p id="heroText">نص البطل / وصف مختصر</p>
+      <p>
+        السعر قبل: <span id="priceBefore"></span> -
+        السعر بعد: <span id="priceAfter"></span>
+      </p>
+      <button id="ctaButton">اطلب الآن</button>
+    </section>
+  
+    <!-- 2️⃣ Showcase Section -->
+    <section id="showcase">
+      <div id="imageSlider">
+        <!-- Product images slider placeholder -->
+      </div>
+      <div id="productDescription">
+        <!-- Product description goes here -->
+      </div>
+    </section>
+  
+    <!-- 3️⃣ Benefits Section -->
+    <section id="benefits">
+      <div class="benefit-card" id="benefit1">
+        <h3>ميزة 1</h3>
+        <p>وصف الميزة 1</p>
+      </div>
+      <div class="benefit-card" id="benefit2">
+        <h3>ميزة 2</h3>
+        <p>وصف الميزة 2</p>
+      </div>
+      <div class="benefit-card" id="benefit3">
+        <h3>ميزة 3</h3>
+        <p>وصف الميزة 3</p>
+      </div>
+    </section>
+  
+    <!-- 4️⃣ Form Section -->
+    <section id="orderForm">
+      <form id="landingForm">
+  
+        <!-- Offers (dynamic, max 3) -->
+        <div id="offers">
+          <p>اختر العرض:</p>
+          <!-- Dynamic offers radio buttons will be injected here -->
+        </div>
+  
+        <input type="hidden" name="redirect" value="https://iisoheib.github.io/chaufage-electrique/thankyoupage.html">
+        <input type="hidden" name="product" value="دفاية 800واط">
+      
+        <!-- Name -->
+        <label>الاسم الكامل</label>
+        <input name="name" type="text" required />
+      
+        <!-- Phone -->
+        <label>رقم الهاتف</label>
+        <input name="phone-number" type="tel" id="phone" required placeholder="07xxxxxxxx" />
+
+                <!-- Variants -->
+        <div id="variantsContainer">
+        <p>اختر الإصدار:</p>
+           <!-- Dynamic variant radio buttons will be injected here -->
+        </div>
+      
+        <!-- Quantity -->
+        <label>الكمية</label>
+        <div class="quantity-field">
+          <button type="button" class="qty-btn" id="decrease">-</button>
+          <input name="quantity" type="number" id="quantity" value="1" min="1" readonly/>
+          <button type="button" class="qty-btn" id="increase">+</button>
+        </div>
+      
+        <!-- Wilaya -->
+        <label>الولاية</label>
+        <select name="wilaya" id="wilaya" required>
+          <option value="">اختر الولاية</option>
+          <!-- Options will be injected dynamically from your JSON -->
+        </select>
+      
+        <!-- Baladia / Municipality -->
+        <label>البلدية</label>
+        <input name="baladia" type="text" />
+      
+        <!-- Address -->
+        <label>العنوان</label>
+        <input name="adress" type="text" />
+      
+        <!-- Delivery Method -->
+        
+        <div class="radio-group">
+          <label class="radio"><input type="radio" name="place" value="office"  checked /> المكتب</label>
+          <label class="radio"><input type="radio" name="place" value="home"  /> المنزل</label>
+        </div>
+      
+        <!-- Submit -->
+        <button class="buy-btn" id="buyBtn" disabled>🛒 اطلب الآن</button>
+
+        <div class="status" id="status"></div>
+
+      
+        <!-- Phone Hint -->
+        <div id="phoneHint" style="color:red; font-size:16px; font-weight:bold; text-align:center; margin-top:10px; display:block;">
+          يرجى التحقق من صحة رقم الهاتف قبل المتابعة
+        </div>
+  
+      </form>
+    </section>
+  
+    <!-- 5️⃣ Summary Prices Card -->
+    <section id="summary">
+      <h3>ملخص الأسعار</h3>
+      <p>سعر المنتج: <span id="summaryProductPrice"></span></p>
+      <p>سعر التوصيل: <span id="summaryDeliveryPrice"></span></p>
+      <p>العروض المطبقة: <span id="summaryOffers"></span></p>
+      <p>المجموع الكلي: <span id="summaryTotal"></span></p>
+    </section>
+  
+  </div>
+
+  <script>
+    // fetching adn seting up the webpage to be ready to display content =================================================
+    // GLOBAL STATE
+    let settings = {};
+    let deliveryPrices = [];
+    let variations = [];
+
+    // ENDPOINTS
+    const SETTINGS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyN1_LSlsKJoOm6ouIwVt6ma2fBzp_Bz6-WIXgJx6rFPjFtMi6dgy7R4ZddX65fui9b9A/exec";
+    const DELIVERY_ENDPOINT = "https://script.google.com/macros/s/AKfycbxhe_hv-Zi8rBuV3RqfKRZlNQcZ0oTHt1QXNdBhrvK7bBJv8MiLO1Il2Aiy5wx6fpB71A/exec";
+    const VARIATIONS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxlfiq5G7ZaEcTJur91Uf-uuLu3hQcH04rqq99o3MVnJVGGsBpoGQeIrmiUvPxr1rqg/exec";
+
+    async function fetchJSON(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Fetch failed: " + url);
+      return res.json();
+    }
+
+    async function init() {
+      try {
+        // 1️⃣ Fetch settings
+        settings = await fetchJSON(SETTINGS_ENDPOINT);
+        console.log("Settings:", settings);
+
+        // Inject Pixel immediately
+        injectMetaPixel(settings.metaPixelID);
+
+        // ✅ Settings loaded and Pixel injected — hide loading screen with fade
+        const loader = document.getElementById("loadingScreen");
+        loader.classList.add('fade-out');
+
+        // call the functions that inject the content (settings content)  =================================================================
+           
+        injectHeroSectionFromSettings();
+        injectShowcaseSectionFromSettings();
+        injectBenefitsSectionFromSettings();
+        injectOffersFromSettings();
+        injectDeliveryCompanyNote();
+        initImageSlider();
+        enhanceDescription();
+
+        //end the of the injection functions calls (settings content) =========================================================================
+
+        // Show main content
+        document.getElementById("mainContent").style.display = "block";
+
+        // 2️⃣ Fetch other data in background
+        fetchJSON(DELIVERY_ENDPOINT).then(data => {
+          deliveryPrices = data;
+          console.log("Delivery prices loaded:", deliveryPrices);
+         
+           //caling functions that need wilayas and delevry prices fetching===================================================
+        
+                populateWilayasFromJSON(deliveryPrices);
+
+
+           //end calling functions that need wilayas and delevry prices fetching=============================================
+
+        }).catch(err => console.error(err));
+
+        fetchJSON(VARIATIONS_ENDPOINT).then(data => {
+          variations = data;
+          console.log("Variations loaded:", variations);
+
+          // calling functions that need variations ====================================================================
+               
+          injectVariants(variations);
+
+          // end calling functions that need variaitions================================================================
+        }).catch(err => console.error(err));
+
+        console.log("✅ Settings and Pixel ready, main content visible");
+        
+      } catch (err) {
+        console.error("Init error:", err);
+        const loader = document.getElementById("loadingScreen");
+        loader.querySelector('.loading-text').innerText = "Failed to load page.";
+      }
+
+    }
+
+    // Start
+    init();
+    // end fetching and seting webpage to display content ================================================================
+    
+    //begin the display content logic====================================================================================
+
+
+       // function to style and create slider images =======================================================================
+  function initImageSlider() {
+  const track = document.querySelector(".slider-track");
+  if (!track || track.children.length === 0) return;
+
+  const dotsContainer = document.querySelector(".slider-dots");
+  dotsContainer.innerHTML = "";
+
+  const slides = track.children;
+  let index = 0;
+
+  // Create dots
+  for (let i = 0; i < slides.length; i++) {
+    const dot = document.createElement("span");
+    if (i === 0) dot.classList.add("active");
+    dotsContainer.appendChild(dot);
+  }
+
+  const dots = dotsContainer.querySelectorAll("span");
+
+  setInterval(() => {
+    index = (index + 1) % slides.length;
+    track.style.transform = `translateX(-${index * 100}%)`;
+
+    dots.forEach(d => d.classList.remove("active"));
+    dots[index].classList.add("active");
+  }, 3500);
+}
+
+function enhanceDescription() {
+  const desc = document.getElementById("productDescription");
+  if (!desc || !desc.innerText.trim()) return;
+  desc.classList.add("description-box");
+}
+
+
+  // function to style and create slider images =======================================================================
+
+ //styling the radio ofice and home ==================================================================================
+
+ const radios = document.querySelectorAll('.radio');
+
+// Set default active based on checked input
+radios.forEach(radio => {
+  const input = radio.querySelector('input[type="radio"]');
+  if (input.checked) {
+    radio.classList.add('active');
+  }
+
+  // Handle clicks
+  radio.addEventListener('click', () => {
+    radios.forEach(r => r.classList.remove('active'));
+    radio.classList.add('active');
+    input.checked = true;
+  });
+});
+
+
+
+ //end styling radio ofice and home =======================================================================================
+
+    //injecting hero section ============================================================================================
+       
+    function injectHeroSectionFromSettings() {
+  if (!settings) {
+    console.warn("Settings not loaded yet for hero section");
+    return;
+  }
+
+  // Inject content
+  document.getElementById("productName").innerText = settings.productName || "اسم المنتج";
+  document.getElementById("heroText").innerText = settings.heroText || "";
+  document.getElementById("priceBefore").innerText = settings.priceBefore || "";
+  document.getElementById("priceAfter").innerText = settings.priceAfter || "";
+  
+  const ctaButton = document.getElementById("ctaButton");
+  ctaButton.innerText = settings.ctaButtonText || "اطلب الآن";
+
+  // Scroll to form on CTA click
+  ctaButton.addEventListener("click", () => {
+    const formSection = document.getElementById("orderForm");
+    formSection.scrollIntoView({ behavior: "smooth" });
+  });
+
+  console.log("✅ Hero section injected from settings:", settings.productName);
+}
+
+    //end enjecting hero section ========================================================================================
+
+   // Injecting Showcase Section from settings ==========================================================================
+
+   function injectShowcaseSectionFromSettings() {
+  if (!settings) return;
+
+  const imageSlider = document.getElementById("imageSlider");
+  const productDescription = document.getElementById("productDescription");
+
+  // inject correct slider structure
+  imageSlider.innerHTML = `
+    <div class="slider">
+      <div class="slider-track"></div>
+      <div class="slider-dots"></div>
+    </div>
+  `;
+
+  const track = imageSlider.querySelector(".slider-track");
+
+  const images = [settings.image1, settings.image2, settings.image3].filter(Boolean);
+
+  images.forEach((url, i) => {
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = settings.productName + " " + (i + 1);
+    track.appendChild(img);
+  });
+
+  // inject description with correct class
+  productDescription.innerHTML = `
+    <div class="description-box">
+      ${settings.descriptionText || ""}
+    </div>
+  `;
+
+  console.log("✅ Showcase injected correctly");
+}
+
+  
+ // end of Injecting Showcase Section from settings ==========================================================================
+
+ // Injecting Benefits Section from settings =============================================================================
+
+ function injectBenefitsSectionFromSettings() {
+  if (!settings || !settings.benefitsText) {
+    console.warn("Settings not loaded yet or no benefitsText found");
+    document.getElementById("benefits").style.display = "none";
+    return;
+  }
+
+  const benefitsSection = document.getElementById("benefits");
+
+  // Split, trim, and filter out empty strings
+  const benefitsArray = settings.benefitsText
+    .split(",")
+    .map(b => b.trim())
+    .filter(b => b.length > 0); // <<< important
+
+  // Hide whole section if no benefits
+  if (benefitsArray.length === 0) {
+    benefitsSection.style.display = "none";
+    return;
+  }
+
+  // Get the 3 benefit card containers
+  const benefitCards = [
+    document.getElementById("benefit1"),
+    document.getElementById("benefit2"),
+    document.getElementById("benefit3")
+  ];
+
+  // Inject the benefits dynamically
+  benefitCards.forEach((card, index) => {
+    if (!card) return;
+    if (benefitsArray[index]) {
+      card.querySelector("h3").innerText = `ميزة ${index + 1}`;
+      card.querySelector("p").innerText = benefitsArray[index];
+      card.style.display = "block";
+    } else {
+      // Hide empty cards if less than 3 benefits
+      card.style.display = "none";
+    }
+  });
+
+  console.log("✅ Benefits section injected:", benefitsArray);
+} 
+
+ // end Injecting Benefits Section from settings ============================================================================
+ 
+ //enjecting offers and feltring quantity and discount value =============================================================
+ let offerCards = []; // global reference for highlighting
+let selectedOffer = null; // currently highlighted offer 
+ 
+ function injectOffersFromSettings() {
+  const offersContainer = document.getElementById("offers");
+  if (!offersContainer || !settings) {
+    console.warn("Offers container or settings missing");
+    return;
+  }
+
+  offersContainer.innerHTML = "<p>العروض المتوفرة:</p>";
+
+  // Helper to parse "2p3000" string
+  function parseOfferString(str) {
+    if (!str) return null;
+    const match = str.match(/(\d+)\s*p\s*(\d+)/i); // capture 2 numbers
+    if (!match) return null;
+    return {
+      quantity: Number(match[1]),
+      unitPrice: Number(match[2])
+    };
+  }
+
+  // Raw offers
+  const rawOffers = [
+    { key: "offer1", data: parseOfferString(settings.offer1), freeShipping: false },
+    { key: "offer2", data: parseOfferString(settings.offer2), freeShipping: false },
+    { key: "offer3", data: parseOfferString(settings["offer3_free_sheping"]), freeShipping: true }
+  ];
+
+  // Filter valid offers
+  const offers = rawOffers.filter(o => o.data && o.data.quantity > 0 && o.data.unitPrice > 0);
+
+  if (offers.length === 0) {
+    offersContainer.style.display = "none";
+    return;
+  }
+
+  // Render offers
+  offers.forEach(offer => {
+  const totalPrice = offer.data.quantity * offer.data.unitPrice;
+
+  const card = document.createElement("div");
+  card.className = "offer-card";
+
+  // store values for math
+  card.dataset.key = offer.key;
+  card.dataset.quantity = offer.data.quantity;
+  card.dataset.unitPrice = offer.data.unitPrice;
+  card.dataset.freeShipping = offer.freeShipping;
+
+  // Arabic text
+  card.innerText = offer.freeShipping
+    ? `اشترِ ${offer.data.quantity} بسعر ${totalPrice} دج + توصيل مجاني`
+    : `اشترِ ${offer.data.quantity} بسعر ${totalPrice} دج`;
+
+  offersContainer.appendChild(card);
+
+  // store reference
+  offerCards.push(card);
+});
+;
+
+  console.log("✅ Offers injected from endpoint:", offers);
+}
+
+ // end enjecting offers and feltring quantity and discount value =============================================================
+
+ // seting up form=======================================================================================================
+
+ // enjecting wilayas in the form ========================================================================================
+
+ function populateWilayasFromJSON(wilayasJSON) {
+  const wilayaSelect = document.getElementById("wilaya");
+  if (!wilayaSelect) return;
+
+  // Clear previous options
+  wilayaSelect.innerHTML = '<option value="">اختر الولاية</option>';
+
+  wilayasJSON.forEach(w => {
+    const option = document.createElement("option");
+    option.value = w.wilaya_name;
+    option.text = w.wilaya_name;
+    wilayaSelect.appendChild(option);
+  });
+}
+
+ // end enjecting wilayas in the form====================================================================================
+
+ //enjecting variants ===================================================================================================
+
+ function injectVariants(variants) {
+  const container = document.getElementById("variantsContainer");
+  container.innerHTML = ""; // clear previous variants
+
+  if (!variants || variants.length === 0) return;
+
+  variants.forEach(variant => {
+    if (!variant.values || variant.values.length === 0) return;
+
+    // Wrapper for the whole variant group
+    const variantDiv = document.createElement("div");
+    variantDiv.className = "variant-group";
+    
+    // Variant label
+    const label = document.createElement("label");
+    label.innerText = `اختر ${variant.variant}`;
+    variantDiv.appendChild(label);
+
+    // Radio group container
+    const radioGroup = document.createElement("div");
+    radioGroup.className = "variant-options";
+
+    // Generate radio buttons as clickable cards
+    variant.values.forEach((val, index) => {
+      const optionLabel = document.createElement("label");
+      optionLabel.className = "variant-option";
+
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = variant.variant;
+      input.value = val;
+      input.required = true; // required for form submission
+
+      // Option text
+      const span = document.createElement("span");
+      span.innerText = val;
+
+      optionLabel.appendChild(input);
+      optionLabel.appendChild(span);
+      radioGroup.appendChild(optionLabel);
+
+      // Optional: highlight selected option
+      input.addEventListener("change", () => {
+        // Remove active class from all
+        radioGroup.querySelectorAll(".variant-option").forEach(opt => {
+          opt.classList.remove("active");
+        });
+        // Add active class to selected
+        optionLabel.classList.add("active");
+      
+      });
+    });
+
+    variantDiv.appendChild(radioGroup);
+    container.appendChild(variantDiv);
+  });
+
+  console.log("✅ Variants injected as clickable radio groups:", variants);
+}
+
+
+
+ //end enjecting variants ===============================================================================================
+ 
+ // encrease and decrease quantity buttons logic ========================================================================
+
+ const qtyInput = document.getElementById("quantity");
+document.getElementById("increase").addEventListener("click", () => {
+  qtyInput.value = Number(qtyInput.value) + 1;
+
+  updateOfferHighlight();
+  updateSummaryPrices();
+});
+document.getElementById("decrease").addEventListener("click", () => {
+  if (Number(qtyInput.value) > 1) {
+    qtyInput.value = Number(qtyInput.value) - 1;
+   
+    updateOfferHighlight();
+    updateSummaryPrices();
+  }
+});
+
+ //end encrease and decrease quantity butons logic======================================================================
+ // hilighte matching offers ===========================================================================================
+
+ function updateOfferHighlight() {
+  const qtyInput = document.getElementById("quantity");
+  const userQty = Number(qtyInput.value);
+
+  let matched = null;
+
+    // Reset all cards first
+    offerCards.forEach(card => {
+    card.style.backgroundColor = ""; // reset bg
+    card.style.color = "";           // reset text color
+    card.style.boxShadow = "";       // reset glow
+    card.style.transition = "";      // reset transition
+  });
+
+  offerCards.forEach(card => {
+    const offerQty = Number(card.dataset.quantity);
+    if (userQty >= offerQty) {
+      if (!matched || offerQty > Number(matched.dataset.quantity)) {
+        matched = card;
+      }
+    }
+
+  });
+
+  if (matched) {
+    matched.style.backgroundColor = "#222"; // dark base
+    matched.style.color = "#FFD700"; // gold text
+    matched.style.boxShadow = "0 0 15px #FFD700, 0 0 25px #FFD700"; // glow
+    matched.style.transition = "all 0.3s ease"; // smooth highlight
+
+    selectedOffer = {
+      key: matched.dataset.key,
+      quantity: Number(matched.dataset.quantity),
+      unitPrice: Number(matched.dataset.unitPrice),
+      freeShipping: matched.dataset.freeShipping === "true"
+    };
+  } else {
+    selectedOffer = null;
+  }
+
+  // Update summary prices
+  updateSummaryPrices();
+}
+
+
+ // end highlighting matching offers ===================================================================================
+
+ // injecting delevry company ==========================================================================================
+
+ function injectDeliveryCompanyNote() {
+  const formSection = document.getElementById("orderForm");
+  if (!formSection || !settings) return;
+
+  // Check if label already exists
+  let noteLabel = document.getElementById("deliveryNote");
+  if (!noteLabel) {
+    noteLabel = document.createElement("label");
+    noteLabel.id = "deliveryNote";
+    noteLabel.style.display = "block"; // ensure it’s on its own line
+    noteLabel.style.marginBottom = "5px"; // spacing
+
+    // Append it above the radio group safely
+    const radioGroup = formSection.querySelector(".radio-group");
+    if (radioGroup) {
+      radioGroup.parentNode.insertBefore(noteLabel, radioGroup);
+    } else {
+      // fallback: append at end of form
+      formSection.appendChild(noteLabel);
+    }
+  }
+
+  // Set the dynamic text
+  const companyName = settings.delivery_company || "شركة التوصيل";
+  noteLabel.innerText = `   طريقة الاستلام (شركة التوصيل ${companyName})`;
+}
+
+
+ //end injecting delevry company =======================================================================================
+
+ //updating the samury prices ==========================================================================================
+
+ function updateSummaryPrices() {
+  const summaryProductPrice = document.getElementById("summaryProductPrice");
+  const summaryDeliveryPrice = document.getElementById("summaryDeliveryPrice");
+  const summaryOffers = document.getElementById("summaryOffers");
+  const summaryTotal = document.getElementById("summaryTotal");
+
+  const qtyInput = document.getElementById("quantity");
+  const userQty = Number(qtyInput.value);
+
+  // Product price
+  let productPrice = 0;
+  let offerText = "لا يوجد عرض";
+
+  if (selectedOffer) {
+    // multiply the selected offer unit price by quantity
+    productPrice = userQty * selectedOffer.unitPrice;
+
+    offerText = selectedOffer.freeShipping
+      ? `اشترِ ${selectedOffer.quantity} بسعر ${selectedOffer.unitPrice * selectedOffer.quantity} دج + توصيل مجاني`
+      : `اشترِ ${selectedOffer.quantity} بسعر ${selectedOffer.unitPrice * selectedOffer.quantity} دج`;
+  } else {
+    const normalPrice = Number(settings.priceAfter) || 0;
+    productPrice = userQty * normalPrice;
+  }
+
+  summaryProductPrice.innerText = productPrice + " دج";
+  summaryOffers.innerText = offerText;
+
+  // Delivery price
+  const wilayaSelect = document.getElementById("wilaya");
+  const placeRadios = document.getElementsByName("place");
+  let selectedPlace = Array.from(placeRadios).find(r => r.checked)?.value || "office";
+
+  let deliveryPrice = 0;
+
+  if (wilayaSelect.value) {
+    const wilaya = deliveryPrices.find(w => w.wilaya_name === wilayaSelect.value);
+    if (wilaya) {
+      if (selectedOffer && selectedOffer.freeShipping) {
+        deliveryPrice = 0; // free shipping offer
+      } else {
+        // Map "home"/"office" to actual keys in your array
+        const priceKey = selectedPlace === "home" ? "home_price" : "office_price";
+        deliveryPrice = Number(wilaya[priceKey]) || 0;
+      }
+    }
+  }
+
+  summaryDeliveryPrice.innerText = deliveryPrice + " دج";
+
+  // Total
+  const total = productPrice + deliveryPrice;
+  summaryTotal.innerText = total + " دج";
+}
+
+
+ //end the updating summary prices =======================================================================================
+ //validate the form informations logic=================================================================================
+
+ const landingForm = document.getElementById("landingForm");
+const phoneInput = document.getElementById("phone");
+const buyBtn = document.getElementById("buyBtn");
+const phoneHint = document.getElementById("phoneHint");
+
+// Function to validate phone number
+function validatePhone(phone) {
+  // Must start with 05, 06, or 07 and be 10 digits
+  return /^(05|06|07)\d{8}$/.test(phone);
+}
+
+// Function to validate the whole form
+function validateForm() {
+  const name = landingForm.name.value.trim();
+  const phone = landingForm["phone-number"].value.trim();
+  const wilaya = landingForm.wilaya.value;
+
+  let valid = true;
+
+  // Name required
+  if (!name) valid = false;
+
+  // Wilaya required
+  if (!wilaya) valid = false;
+
+  // Phone validation
+  if (!validatePhone(phone)) {
+    valid = false;
+    phoneHint.innerText = "رقم الهاتف غير صحيح! يجب أن يبدأ بـ 05 أو 06 أو 07 ويتكون من 10 أرقام";
+    phoneHint.style.color = "red";
+    phoneHint.style.display = "block";
+  } else {
+    phoneHint.innerText = "رقم الهاتف صحيح";
+    phoneHint.style.color = "green";
+    phoneHint.style.display = "block";
+  }
+
+  buyBtn.disabled = !valid;
+}
+
+// Event listeners to validate on input/change
+landingForm.addEventListener("input", validateForm);
+landingForm.addEventListener("change", validateForm);
+
+// Initial validation call
+validateForm();
+
+ //end validating the form infos logic =================================================================================
+
+// updating the summary after wilaya changes ===
+document.getElementById("wilaya").addEventListener("change", () => {
+  updateSummaryPrices();
+});
+
+// updating the summary after place of delevry changes ===
+document.addEventListener("DOMContentLoaded", () => {
+  document
+    .querySelectorAll('input[name="place"]')
+    .forEach(radio => {
+      radio.addEventListener("click", updateSummaryPrices);
+    });
+});
+
+
+
+ //end seting up form ===================================================================================================
+
+ const summaryDeliveryPrice = document.getElementById("summaryDeliveryPrice");
+summaryDeliveryPrice.innerText = "سعر التوصيل سيظهر بعد اختيار الولاية";
+
+ //end the display content logic==================================================================================== 
+
+
+ //sending form to orders sheet ========================================================================================
+
+ const ORDERS_SHEET_URL = "https://script.google.com/macros/s/AKfycbyvMGklpfYQZzKfYxHNJC7kK2x6p2Oh16OXuRrFAaQ9wCI-z9jqWlPi66Nel7YJGupy/exec"; // ← put your Apps Script Web App URL here
+
+ async function submitOrder() {
+  const statusEl = document.getElementById("status");
+  const buyBtn = document.getElementById("buyBtn");
+  const originalBtnText = buyBtn.innerHTML;
+
+  // show loading
+  buyBtn.disabled = true;
+  buyBtn.innerHTML = '⏳ جاري إرسال الطلب...';
+
+  const qtyInput = document.getElementById("quantity");
+  const userQty = Number(qtyInput.value);
+
+  // get selected wilaya and place
+  const wilayaSelect = document.getElementById("wilaya");
+  const placeRadios = document.getElementsByName("place");
+  const selectedPlace = Array.from(placeRadios).find(r => r.checked)?.value || "office";
+
+  // delivery price logic
+  let deliveryPrice = 0;
+  if (wilayaSelect.value) {
+    const wilaya = deliveryPrices.find(w => w.wilaya_name === wilayaSelect.value);
+    if (wilaya) {
+      if (selectedOffer && selectedOffer.freeShipping) {
+        deliveryPrice = 0;
+      } else {
+        deliveryPrice = Number(wilaya[selectedPlace]) || 0;
+      }
+    }
+  }
+
+  // product price
+  let productPrice = selectedOffer ? userQty * selectedOffer.unitPrice : userQty * (Number(settings.priceAfter) || 0);
+
+  // collect variants dynamically
+  const variants = {};
+  document.querySelectorAll("#variantsContainer .variant-group").forEach(group => {
+    const checkedInput = group.querySelector("input[type='radio']:checked");
+    const name = checkedInput?.name || "";
+    if (name) variants[name] = checkedInput.value;
+  });
+
+  // form data
+  const data = new URLSearchParams({
+    name: document.querySelector('input[name="name"]').value,
+    phone: document.querySelector('input[name="phone-number"]').value,
+    wilaya: wilayaSelect.value,
+    baladia: document.querySelector('input[name="baladia"]').value,
+    place: selectedPlace,
+    product: settings.productName || "",
+    price: productPrice + deliveryPrice,
+    ...variants // add all selected variants
+  });
+
+  try {
+    const res = await fetch(ORDERS_SHEET_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: data
+    });
+
+    const json = await res.json();
+
+    if (json.success) {
+      statusEl.textContent = "✅ تم إرسال الطلب بنجاح";
+      buyBtn.innerHTML = originalBtnText;
+      buyBtn.disabled = false;
+      window.location.href = "https://iisoheib.github.io/prototype/thnks%20testing%20themes.html";
+      // optionally reset form
+      // document.getElementById("landingForm").reset();
+    } else {
+      statusEl.textContent = "❌ خطأ: " + json.error;
+      buyBtn.innerHTML = originalBtnText;
+      buyBtn.disabled = false;
+    }
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "❌ فشل في إرسال الطلب";
+    buyBtn.innerHTML = originalBtnText;
+    buyBtn.disabled = false;
+  }
+}
+
+ //end sending form to orders sheet ====================================================================================
+
+ //caling the submit fonction on click submit ===========================================================================
+
+ document.getElementById("buyBtn").addEventListener("click", function(e) {
+  e.preventDefault(); // prevent default form submission
+  submitOrder();
+
+
+
+});
+
+
+
+  </script>
+
+</body>
+</html>
