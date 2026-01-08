@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم</title>
+<style>
+/* ---------- General ---------- */
+* { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
+body { background: #f8f8f8; }
+
+/* ---------- Loading / Login Wrapper ---------- */
+#loginWrapper {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background:#fff; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; z-index:1000;
+}
+#loginWrapper h2 { font-size:22px; margin-bottom:10px; }
+#loginStatus { color:#555; margin-top:5px; }
+
+/* ---------- Header ---------- */
+header {
+  position: fixed; top:0; right:0; width:100%; height:60px;
+  background:#fff; display:flex; align-items:center;
+  justify-content:space-between; padding:0 20px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:1000;
+}
+header h1 { font-size:20px; color:#333; }
+.menu-btn {
+  font-size:25px; background:#ffd700; border:none;
+  padding:8px 12px; border-radius:5px; cursor:pointer;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  height:100%; width:0; position:fixed; top:0; right:0;
+  background:#fff; overflow-x:hidden; transition:0.3s;
+  padding-top:60px; box-shadow:-2px 0 5px rgba(0,0,0,0.1);
+  z-index:999;
+}
+.sidebar button {
+  display:block; padding:15px 25px; margin:5px 0; border:none;
+  background:#f0f0f0; border-radius:8px; cursor:pointer; text-align:right;
+  font-size:16px; transition:0.2s;
+}
+.sidebar button:hover, .sidebar button.active { background:#ffd700; color:#000; }
+
+/* ---------- Overlay ---------- */
+.overlay {
+  position:fixed; display:none; width:100%; height:100%;
+  top:0; right:0; background-color: rgba(0,0,0,0.5);
+  z-index:900; transition:0.3s;
+}
+
+/* ---------- Main Content ---------- */
+.main-content {
+  padding:80px 20px 20px 20px; transition: margin-right 0.3s;
+}
+.section {
+  display:none; padding:20px; background:#fff;
+  border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  margin-bottom:20px;
+}
+.section.active { display:block; animation:fadeIn 0.3s; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+/* Visit Button */
+.visit-btn {
+  background:#ffd700; color:#000; padding:12px 20px; border:none;
+  border-radius:8px; font-size:16px; cursor:pointer; transition:0.2s;
+  margin-top:15px;
+}
+.visit-btn:hover { background:#e6c200; }
+
+/* Instructions */
+.instructions { line-height:1.6; margin-top:15px; }
+
+/* Table */
+#settingsTable { width:100%; border-collapse: collapse; direction:ltr; margin-top:15px; }
+#settingsTable td, #settingsTable th { border:1px solid #ddd; padding:8px; }
+#settingsTable th { background:#ffd700; color:#000; }
+#saveAllBtn { margin-top:10px; padding:10px 20px; background:#ffd700; color:#000; border:none; border-radius:5px; cursor:pointer; }
+
+/* ---------- Images Section (Unified Theme) ---------- */
+.uploader {
+  max-width: 500px;              /* slightly wider for consistency */
+  margin: 20px auto;             /* center with spacing */
+  background: #fff;              /* card white background */
+  padding: 20px;
+  border-radius: 10px;           /* match other sections */
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* subtle shadow */
+}
+
+.drop-area {
+  border: 2px dashed #ccc;
+  border-radius: 10px;           /* match panel theme */
+  padding: 40px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: 0.3s;
+  background: #fafafa;           /* light gray background inside drop */
+}
+
+.drop-area.hover {
+  border-color: #ffd700;         /* primary gold color for hover */
+  background: #fffbea;           /* very light gold background */
+}
+
+img {
+  max-width: 100%;
+  margin-top: 10px;
+  display: none;
+  border-radius: 10px;           /* match card rounding */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.status {
+  margin-top: 10px;
+  font-weight: bold;
+  min-height: 24px;
+  color: #333;                   /* consistent text color */
+}
+
+/* ---------- Buttons ---------- */
+button.saveImage {
+  padding: 10px 20px;
+  background: #ffd700;            /* gold to match main theme */
+  color: #000;
+  border: none;
+  border-radius: 8px;             /* match other buttons */
+  cursor: pointer;
+  margin: 5px;
+  transition: 0.2s;
+}
+
+button.saveImage:hover {
+  background: #e6c200;           /* darker gold on hover */
+}
+
+
+/* Loading animation inside button */
+button.saving { position:relative; pointer-events:none; }
+button.saving::after {
+  content:" جاري الحفظ...";
+  position:absolute; right:10px; top:50%;
+  transform:translateY(-50%);
+  font-size:14px; color:#fff;
+
+}
+
+/* ---------- Settings Section ---------- */
+.setting-item {
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: background 0.2s;
+}
+
+.setting-item:hover { background: #f5f5f5; }
+
+.setting-item .title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.setting-item .indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+/* Input field hidden by default */
+.setting-item input {
+  display: none;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Show input when active */
+.setting-item.active input { display: block; }
+
+/* Progress Bar */
+.settings-progress {
+  width: 100%;
+  height: 10px;
+  background: #eee;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+
+.settings-progress .progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #28a745;
+  transition: width 0.4s ease;
+}
+
+/* Save Button */
+#saveAllBtn {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.2s;
+}
+
+#saveAllBtn.saving { background: #218838; cursor: default; }
+
+/* ---------- Delivery Section ---------- */
+#delivery {
+  padding: 20px;
+}
+
+#delivery h2 {
+  margin-bottom: 5px;
+}
+
+#delivery p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Wilaya card */
+.wilaya-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: 0.2s ease;
+}
+
+.wilaya-item:hover {
+  transform: translateY(-2px);
+}
+
+/* Wilaya title */
+.wilaya-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+/* Inputs */
+.wilaya-item input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  transition: border 0.2s ease;
+}
+
+.wilaya-item input:focus {
+  border-color: #28a745;
+  outline: none;
+}
+
+/* Save button */
+#saveDeliveryBtn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+#saveDeliveryBtn:hover {
+  background: #218838;
+}
+
+#saveDeliveryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.variant-item {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.variant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+
+.variant-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #28a745;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.variant-value {
+  margin-top: 8px;
+  color: #555;
+  font-size: 14px;
+}
+
+.variant-edit {
+  display: none;
+  margin-top: 12px;
+}
+
+.variant-edit input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+
+.variant-save {
+  width: 100%;
+  padding: 12px;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+</style>
+</head>
+<body>
+    
+
+<!-- ---------- Loading / Login Wrapper ---------- -->
+<div id="loginWrapper">
+    <h2>تسجيل الدخول</h2>
+    <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" style="margin:5px 0;padding:8px;width:250px;">
+    <input type="password" id="loginPassword" placeholder="كلمة المرور" style="margin:5px 0;padding:8px;width:250px;">
+    <button id="loginBtn" style="padding:8px 15px;margin-top:5px;">تسجيل الدخول</button>
+    <div id="loginStatus" style="margin-top:5px;color:#555;"></div>
+  </div>
+
+<!-- ---------- Control Panel ---------- -->
+<div id="controlPanel" style="display:none;">
+
+  <!-- ---------- Header ---------- -->
+  <header>
+    <h1>لوحة التحكم</h1>
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+  </header>
+
+  <!-- ---------- Sidebar ---------- -->
+  <div id="mySidebar" class="sidebar">
+    <button class="nav-btn active" data-target="home">الرئيسية</button>
+    <button class="nav-btn" data-target="images">الصور</button>
+    <button class="nav-btn" data-target="settings">الإعدادات</button>
+    <button class="nav-btn" data-target="variants">أنواع المنتجات</button>
+    <button class="nav-btn" data-target="delivery">أسعار التوصيل</button>
+    <button class="nav-btn" data-target="orders">الطلبات</button>
+    <button class="nav-btn"  id="logoutBtn">تسجيل الخروج</button>
+  </div>
+
+  <!-- ---------- Overlay ---------- -->
+  <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- ---------- Main Content ---------- -->
+  <div class="main-content">
+    <!-- Home Section -->
+    <div id="home" class="section active">
+      <h2>مرحباً بك في لوحة التحكم</h2>
+      <p>استخدم هذه اللوحة للتحكم بكل جوانب صفحة الهبوط الخاصة بك:</p>
+      <div class="instructions">
+        <ul>
+          <li>قم بزيارة الموقع لمشاهدة التغييرات مباشرة.</li>
+          <li>قم برفع أو تعديل صور المنتجات في قسم الصور.</li>
+          <li>قم بتحرير أنواع المنتجات والأسعار في قسم أنواع المنتجات.</li>
+          <li>اضبط أسعار التوصيل في قسم أسعار التوصيل.</li>
+          <li>قم بتغيير الإعدادات مثل Pixel ID في قسم الإعدادات.</li>
+          <li>اطلع على الطلبات المُرسلة في قسم الطلبات.</li>
+        </ul>
+      </div>
+      <button class="visit-btn" id="visitBtn">زيارة الموقع لرؤية التغييرات</button>
+    </div>
+
+    <!-- Images Section -->
+    <div id="images" class="section">
+      <div class="uploader">
+        <h2>تحديث الصور</h2>
+        <div class="drop-area" id="drop-area">
+          اسحب الصورة هنا أو اضغط لاختيارها
+          <input type="file" id="fileElem" accept="image/*" style="display:none">
+        </div>
+        <img id="preview">
+        <div class="status" id="status"></div>
+        <div>
+          <button class="saveImage" id="saveImage1">حفظ الصورة 1</button>
+          <button class="saveImage" id="saveImage2">حفظ الصورة 2</button>
+          <button class="saveImage" id="saveImage3">حفظ الصورة 3</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div id="settings" class="section">
+        <h2>الإعدادات</h2>
+      
+        <!-- Progress Bar -->
+        <div id="settingsProgress" class="settings-progress">
+          <div class="progress-bar"></div>
+        </div>
+      
+        <!-- Settings List -->
+        <div id="settingsList" class="settings-list"></div>
+      
+        <!-- Save All Button -->
+        <button id="saveAllBtn">حفظ التغييرات</button>
+      </div>
+      
+   <!-- Variants Section -->
+<div id="variants" class="section">
+    <h2>أنواع المنتج</h2>
+    <p>أدخل القيم مفصولة بفاصلة (,)</p>
+  
+    <div class="variant-item" data-key="color">
+      <div class="variant-header">
+        <span>Color</span>
+        <button class="variant-toggle">+</button>
+      </div>
+      <div class="variant-value">(غير مستعمل)</div>
+  
+      <div class="variant-edit">
+        <input type="text" placeholder="black,green,red">
+        <button class="variant-save">حفظ</button>
+      </div>
+    </div>
+  
+    <div class="variant-item" data-key="size">
+      <div class="variant-header">
+        <span>Size</span>
+        <button class="variant-toggle">+</button>
+      </div>
+      <div class="variant-value">(غير مستعمل)</div>
+  
+      <div class="variant-edit">
+        <input type="text" placeholder="S,M,L">
+        <button class="variant-save">حفظ</button>
+      </div>
+    </div>
+  
+    <div class="variant-item" data-key="pointure">
+      <div class="variant-header">
+        <span>Pointure</span>
+        <button class="variant-toggle">+</button>
+      </div>
+      <div class="variant-value">(غير مستعمل)</div>
+  
+      <div class="variant-edit">
+        <input type="text" placeholder="38,39,40">
+        <button class="variant-save">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- Delivery Prices Section -->
+    <div id="delivery" class="section">
+      <h2>أسعار التوصيل</h2>
+      <p>قم بتحرير تكاليف التوصيل لكل منطقة أو نوع.</p>
+      <div id="deliveryList"></div>
+<button id="saveDeliveryBtn">حفظ أسعار التوصيل</button>
+
+    </div>
+
+    <!-- Orders Section -->
+    <div id="orders" class="section">
+      <h2>الطلبات</h2>
+      <p>اطلع على الطلبات المُرسلة هنا.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Script ---------- -->
+<script>
+let endpoints = {}; // global object for fetched endpoints
+let isSidebarOpen = false;
+
+// ---------- Sidebar Toggle ----------
+const sidebar = document.getElementById('mySidebar');
+const overlay = document.getElementById('overlay');
+function toggleSidebar(){
+  if(isSidebarOpen){
+    sidebar.style.width = "0"; overlay.style.display="none"; isSidebarOpen=false;
+  } else {
+    sidebar.style.width = "250px"; overlay.style.display="block"; isSidebarOpen=true;
+  }
+}
+
+// ---------- Panel Navigation ----------
+const navButtons = document.querySelectorAll('.nav-btn');
+const sections = document.querySelectorAll('.section');
+navButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    navButtons.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const target = btn.getAttribute('data-target');
+    sections.forEach(sec=>sec.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    if(isSidebarOpen) toggleSidebar();
+  });
+});
+
+// ---------- Login & Endpoints Fetch ----------
+document.addEventListener("DOMContentLoaded", ()=>{
+
+const loginWrapper = document.getElementById("loginWrapper");
+const loginStatus = document.getElementById("loginStatus");
+const controlPanel = document.getElementById("controlPanel");
+const loginBtn = document.getElementById("loginBtn");
+const visitBtn = document.getElementById("visitBtn");
+
+async function tryLogin(email, password, isAuto=false){
+  loginStatus.textContent = isAuto ? "جارٍ تسجيل الدخول تلقائياً..." : "جارٍ تسجيل الدخول...";
+  loginBtn.disabled = true; // disable button while trying
+  try {
+    const adminUrl = "https://script.google.com/macros/s/AKfycbzIRcJizAA0ta6aINXXHHTvZoqZpR-y36r_PzVnKXmkj6VlnqQIA21Kuj3P_R1VKSszZQ/exec";
+    const res = await fetch(adminUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ email, password })
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+      localStorage.setItem("clientCredentials", JSON.stringify({email,password}));
+
+      endpoints.settings = data.settings_endpoint;
+      endpoints.delivery = data.delivery_endpoint;
+      endpoints.variant = data.variant_endpoint;
+      endpoints.orders = data.orders_endpoint;
+      endpoints.website_url = data.website_url;
+
+      loadSettingsList(); // now safe to call
+      loadDeliveryPrices();
+      loadVariants();
+
+
+      loginWrapper.style.display = "none";
+      controlPanel.style.display = "block";
+      console.log("Settings endpoint:", endpoints.settings);
+
+   
+    } else {
+      loginStatus.textContent = "بيانات الدخول خاطئة.";
+      if(isAuto) localStorage.removeItem("clientCredentials"); // clear invalid auto-login
+      loginBtn.disabled = false; // re-enable for manual login
+    }
+  } catch(err){
+    loginStatus.textContent = "خطأ أثناء تسجيل الدخول: " + err.message;
+    loginBtn.disabled = false; // re-enable for manual login
+  }
+}
+
+loginBtn.addEventListener("click", ()=> {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+  tryLogin(email, password);
+});
+
+// 🔹 Auto-login
+const stored = localStorage.getItem("clientCredentials");
+if(stored){
+  const creds = JSON.parse(stored);
+  tryLogin(creds.email, creds.password, true);
+  
+}
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem("clientCredentials");
+  endpoints = {};
+
+  document.getElementById('controlPanel').style.display = 'none';
+  document.getElementById('loginWrapper').style.display = 'flex';
+
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginStatus').textContent = '';
+  document.getElementById('loginBtn').disabled = false;
+
+
+});
+
+visitBtn.addEventListener("click", () => {
+  if(endpoints.website_url){
+    window.open(endpoints.website_url, "_blank");
+   
+  } else {
+    alert("رابط الموقع غير متوفر بعد تسجيل الدخول.");
+  }
+});
+
+});
+
+// ---------- Settings Section JS ----------
+const settingsList = document.getElementById("settingsList");
+const progressBar = document.querySelector("#settingsProgress .progress-bar");
+const saveBtn = document.getElementById("saveAllBtn");
+
+// Load settings
+async function loadSettingsList() {
+  if(!endpoints.settings) return;
+
+  try {
+    const res = await fetch(endpoints.settings);
+    const data = await res.json();
+
+    settingsList.innerHTML = "";
+
+    Object.keys(data).forEach(key => {
+      if(key.startsWith("image")) return;
+
+      const value = data[key] || "";
+
+      const item = document.createElement("div");
+      item.classList.add("setting-item");
+
+      const title = document.createElement("div");
+      title.classList.add("title");
+      title.textContent = key;
+
+      const indicator = document.createElement("div");
+      indicator.classList.add("indicator");
+      indicator.style.background = value.length > 0 ? "green" : "red";
+
+      const input = document.createElement("input");
+      input.value = value;
+
+      // Toggle input visibility
+      item.addEventListener("click", e => {
+        if(e.target.tagName.toLowerCase() === "input") return;
+        item.classList.toggle("active");
+        input.focus();
+      });
+
+      // Update indicator and progress live
+      input.addEventListener("input", () => {
+        const val = input.value;
+        indicator.style.background = isFilled(val) ? "green" : "red";
+        updateProgress();
+      });
+
+      item.appendChild(title);
+      item.appendChild(indicator);
+      item.appendChild(input);
+      settingsList.appendChild(item);
+    });
+
+    updateProgress(); // initial
+  } catch(err){
+    settingsList.innerHTML = `<div style="color:red;">خطأ في تحميل الإعدادات: ${err.message}</div>`;
+  }
+}
+
+function isFilled(value) {
+  return value !== null && value !== undefined && String(value).length > 0;
+}
+
+
+// Update progress bar
+function updateProgress() {
+  const items = document.querySelectorAll(".setting-item");
+  if(items.length === 0) return;
+
+  let filled = 0;
+  items.forEach(item => {
+
+     const val = item.querySelector("input")?.value;
+  if(isFilled(val)) filled++;
+  const indicator = item.querySelector(".indicator");
+  if(indicator) indicator.style.background = isFilled(val) ? "green" : "red";
+  });
+
+  const percent = Math.round((filled / items.length) * 100);
+  progressBar.style.width = percent + "%";
+}
+
+// Save all settings
+saveBtn.addEventListener("click", async () => {
+  const items = document.querySelectorAll(".setting-item");
+  if(items.length === 0) return;
+
+  let failed = false;
+
+  // ✅ Start saving
+  
+  saveBtn.innerText = "جارٍ الحفظ...";
+  saveBtn.disabled = true;
+
+  for (let item of items) {
+    const key = item.querySelector(".title").textContent;
+    const value = item.querySelector("input").value;
+
+    try {
+      const res = await fetch(endpoints.settings, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ key, value })
+      });
+
+      const result = await res.json();
+      if (!result.success) failed = true;
+    } catch (err) {
+      failed = true;
+    }
+  }
+
+  // ✅ Finish saving
+  saveBtn.textContent = "حفظ التغييرات";
+  saveBtn.classList.remove("saving");
+  saveBtn.disabled = false;
+
+  alert(failed ? "حدث خطأ أثناء الحفظ" : "تم حفظ جميع التغييرات بنجاح!");
+  updateProgress();
+});
+
+
+
+// ---------- Images Uploader ----------
+const dropArea = document.getElementById('drop-area');
+const fileElem = document.getElementById('fileElem');
+const preview = document.getElementById('preview');
+const statusImg = document.getElementById('status');
+let uploadedUrl = "";
+
+dropArea.addEventListener('click', ()=>fileElem.click());
+fileElem.addEventListener('change', e=>handleFiles(e.target.files));
+dropArea.addEventListener('dragover', e=>{ e.preventDefault(); dropArea.classList.add('hover'); });
+dropArea.addEventListener('dragleave', e=>dropArea.classList.remove('hover'));
+dropArea.addEventListener('drop', e=>{ e.preventDefault(); dropArea.classList.remove('hover'); handleFiles(e.dataTransfer.files); });
+
+function handleFiles(files){
+  if(files.length===0) return;
+  const file = files[0];
+  uploadToImgBB(file);
+}
+
+function showLoading(msg){ statusImg.textContent = msg; }
+
+async function uploadToImgBB(file){
+  showLoading("جارٍ رفع الصورة...");
+  const formData = new FormData();
+  formData.append("key","a766dab2bd05064e7a83c505fef92945");
+  formData.append("image",file);
+
+  try{
+    const res = await fetch("https://api.imgbb.com/1/upload",{method:"POST",body:formData});
+    const data = await res.json();
+    if(!data.success) throw new Error(data.error?.message || "Upload failed");
+
+    uploadedUrl = data.data.url;
+    preview.src = uploadedUrl; preview.style.display="block";
+    showLoading("تم الرفع بنجاح!");
+  } catch(err){ showLoading("خطأ: "+err.message); }
+}
+
+document.getElementById('saveImage1').addEventListener('click',()=>saveToSheet("image1"));
+document.getElementById('saveImage2').addEventListener('click',()=>saveToSheet("image2"));
+document.getElementById('saveImage3').addEventListener('click',()=>saveToSheet("image3"));
+
+async function saveToSheet(key){
+  if(!uploadedUrl) { showLoading("الرجاء رفع صورة أولاً."); return; }
+  showLoading(`جارٍ حفظ ${key}...`);
+  try{
+    // use endpoints.settings from login
+    const res = await fetch(endpoints.settings, {
+      method:"POST",
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body: new URLSearchParams({key:key, value:uploadedUrl})
+    });
+    const data = await res.json();
+    if(data.success){ showLoading(`${key} تم حفظه بنجاح!`); } else { showLoading("فشل في الحفظ."); }
+  } catch(err){ showLoading("خطأ: "+err.message); }
+}
+
+const deliveryList = document.getElementById("deliveryList");
+const saveDeliveryBtn = document.getElementById("saveDeliveryBtn");
+
+// --- Fetch existing delivery prices ---
+async function loadDeliveryPrices() {
+  deliveryList.innerHTML = "جارٍ التحميل...";
+  try {
+    const res = await fetch(endpoints.delivery);
+    const data = await res.json();
+
+    if (!data || !data.length) {
+      deliveryList.innerHTML = "<p>لا توجد بيانات حالياً.</p>";
+      return;
+    }
+
+    // Clear list
+    deliveryList.innerHTML = "";
+
+    // Create div for each wilaya
+    data.forEach(item => {
+      const div = document.createElement("div");
+      div.classList.add("wilaya-item");
+      div.dataset.wilaya = item.wilaya;
+
+      div.innerHTML = `
+        <div class="wilaya-title">${item.wilaya_name}</div>
+        <input type="number" placeholder="سعر التوصيل للمنزل" value="${item.home_price || ""}">
+        <input type="number" placeholder="سعر التوصيل للمكتب" value="${item.office_price || ""}">
+      `;
+
+      deliveryList.appendChild(div);
+    });
+
+  } catch(err) {
+    deliveryList.innerHTML = `<p>خطأ في تحميل الأسعار: ${err.message}</p>`;
+  }
+}
+
+// --- Save delivery prices ---
+saveDeliveryBtn.addEventListener("click", async () => {
+  saveDeliveryBtn.disabled = true;
+  saveDeliveryBtn.textContent = "جارٍ الحفظ...";
+
+  const items = document.querySelectorAll(".wilaya-item");
+  let successAll = true;
+
+  // Send each wilaya separately (matches your doPost)
+  for (const item of items) {
+    const wilaya = item.dataset.wilaya;
+    const inputs = item.querySelectorAll("input");
+    const home_price = inputs[0].value || 0;
+    const office_price = inputs[1].value || 0;
+
+    try {
+      const formData = new URLSearchParams({
+        wilaya,
+        home_price,
+        office_price
+      });
+
+      const res = await fetch(endpoints.delivery, {
+        method: "POST",
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: formData
+      });
+
+      const result = await res.json();
+      if (!result.success) successAll = false;
+
+    } catch(err) {
+      console.error("Error saving wilaya", wilaya, err);
+      successAll = false;
+    }
+  }
+
+  saveDeliveryBtn.disabled = false;
+  saveDeliveryBtn.textContent = "حفظ أسعار التوصيل";
+  alert(successAll ? "تم حفظ جميع الأسعار بنجاح!" : "حدث خطأ أثناء الحفظ");
+});
+
+// --- Initialize ---
+loadDeliveryPrices();
+const variantItems = document.querySelectorAll(".variant-item");
+
+// Load variants
+async function loadVariants() {
+  try {
+    const res = await fetch(endpoints.variant);
+    const data = await res.json();
+
+    console.log("Variations loaded:", data);
+
+    variantItems.forEach(item => {
+  const key = item.dataset.key; // color / size / pointure
+
+  const found = data.find(v => v.variant === key);
+
+  // always make it an array
+  const valuesArray = Array.isArray(found?.values)
+      ? found.values
+      : (found?.values ? found.values.toString().split(",") : []);
+
+  const valueText = valuesArray.length ? valuesArray.join(",") : "";
+
+  item.querySelector(".variant-value").textContent = valueText || "(غير مستعمل)";
+  item.querySelector("input").value = valueText;
+});
+
+  } catch (err) {
+    console.error("Failed to load variants", err);
+  }
+}
+
+// Toggle edit
+variantItems.forEach(item => {
+  const toggleBtn = item.querySelector(".variant-toggle");
+  const editBox = item.querySelector(".variant-edit");
+
+  toggleBtn.addEventListener("click", () => {
+    const opened = editBox.style.display === "block";
+    editBox.style.display = opened ? "none" : "block";
+    toggleBtn.textContent = opened ? "+" : "×";
+  });
+
+  // Save variant using doPost
+  item.querySelector(".variant-save").addEventListener("click", async () => {
+  const key = item.dataset.key;
+  const input = item.querySelector("input");
+  const value = input.value.trim(); // keep as a single string, can be empty
+
+  // ✅ No need to block empty values
+  try {
+    const formData = new URLSearchParams({
+      variant: key,
+      values: value
+    });
+
+    const res = await fetch(endpoints.variant, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: formData
+    });
+
+    const result = await res.json();
+    if(result.success){
+      item.querySelector(".variant-value").textContent = value || "(غير مستعمل)";
+      item.querySelector(".variant-edit").style.display = "none";
+      item.querySelector(".variant-toggle").textContent = "+";
+    } else {
+      alert("حدث خطأ أثناء الحفظ");
+    }
+  } catch(err){
+    alert("خطأ أثناء الحفظ: " + err.message);
+  }
+});
+
+});
+
+
+
+
+</script>
+</body>
+</html>
